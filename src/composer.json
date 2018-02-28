@@ -1,0 +1,6 @@
+{
+    "require": {
+        "irap/autoloader": "^1.0",
+        "irap/route53-wrapper": "^0.1.0"
+    }
+}

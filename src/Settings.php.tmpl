@@ -1,0 +1,27 @@
+<?php
+
+/* 
+ * Fill in the the define and the  getDnsDriver() function.
+ * Then rename this file to Settings.php (remove the .tmpl extension)
+ */
+
+# Specify the command to run acmephp by replacing this define's value
+define('ACMEPHP_COMMAND', '/usr/bin/php '  . getenv('HOME') . '/acme-php/acmephp.phar');
+
+class Settings
+{
+    /**
+     * Return the driver that implements the AcmeDnsDriverInterface so it can
+     * set a TXT record for us. The driver could be for something like Route53 or Digitalocean.
+     * @return \AcmeDnsDriverInterface
+     */
+    public static function getDnsDriver() : AcmeDnsDriverInterface
+    {
+        return new Route53AcmeDriver(
+            'myAwsRoute53Key', 
+            'myAwsRoute53Secret'
+        );
+    }
+}
+
+

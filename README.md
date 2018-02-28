@@ -7,7 +7,7 @@ This does it through interfacing with your DNS provider in order to create the n
 ## Getting Started
 
 * [Install ACME PHP](https://blog.programster.org/acme-php-installation) to your machine.
-* Clone this repository.
+* Clone this repository: `git clone https://github.com/iRAP-software/SSL-generator.git`
 * Go into the `/src` folder.
 * Fill in the `Settings.php.tmpl` file.
     * Right now there is only one supported driver ([Route53](https://aws.amazon.com/route53/)), so you just need to plug in the path to your ACME PHP installation, and plug in your AWS key and secret.

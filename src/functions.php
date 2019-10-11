@@ -117,3 +117,72 @@ function checkDomain($domain) : boolean
 
     return true;
 }
+
+/**
+ * Function to perform the certificate request from the issuing authority,
+ * takes a request string in a form that acme-php will honour.
+ * @param  [type] $request [description]
+ * @return [type]          [description]
+ */
+function requestCertificateFromAuthority($request) : boolean
+{
+    $requestCommand = ACMEPHP_COMMAND . " request {$request}";
+    $output = shell_exec($requestCommand);
+
+    // the user may or may not have been asked a series of questions for that cert, depending on whether
+    // it is their first time or not. This actually still works.
+
+    print $output . PHP_EOL;
+
+}
+
+
+
+
+
+/**
+ * Function to copy the generated certificate files from the acmephp location
+ * to a local folder (local to where the script is being called) for easier
+ * access.
+ * @param  string $foldername the desired name for the new folder
+ * @return bool             return
+ */
+function copyCertificatesToDomainFolder($foldername) : boolean
+{
+    mkdir($foldername);
+    mkdir("{$foldername}/nginx");
+    mkdir("{$foldername}/apache");
+
+    $certsPath = getenv('HOME') . '/.acmephp/master/certs/' . $foldername;
+    $privateKeyPath = getenv('HOME') . '/.acmephp/master/private/' . $foldername;
+
+    $chainfile = $certsPath . '/chain.pem';
+    $nginxCombinedFile = $certsPath . '/fullchain.pem';
+    $siteCert = $certsPath . '/cert.pem';
+    $privateKey = $privateKeyPath . '/private.pem';
+
+    copy($chainfile, "{$foldername}/apache/ca_bundle.crt");
+    copy($siteCert, "{$foldername}/apache/{$foldername}.crt");
+    copy($privateKey, "{$foldername}/apache/{$foldername}.key");
+
+    copy($nginxCombinedFile, "{$foldername}/nginx/{$foldername}.crt");
+    copy($privateKey, "{$foldername}/nginx/{$foldername}.key");
+
+    return true;
+}
+
+
+/**
+ * Function to run an acmephp status check to confirm the certificate is valid
+ * and display the dates.
+ * @return boolean return
+ */
+function checkCertificateStatus() : boolean
+{
+    $statusCommand = ACMEPHP_COMMAND . "status";
+    $output = shell_exec($statusCommand);
+
+    print $output . PHP_EOL;
+
+    return true;
+}

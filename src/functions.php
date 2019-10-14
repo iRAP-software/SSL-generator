@@ -7,6 +7,7 @@ function getDnsTxtValueForDomain(string $domain) : string
 {
     $cmd = ACMEPHP_COMMAND . " authorize --solver dns {$domain}";
     $output = shell_exec($cmd);
+
     $lines = explode(PHP_EOL, $output);
 
     foreach ($lines as $line)
@@ -19,6 +20,8 @@ function getDnsTxtValueForDomain(string $domain) : string
         }
     }
 
+    print "*** TXT value (" . $domain . "): " . $txtValue . " ***" . PHP_EOL;
+
     return $txtValue;
 }
 
@@ -27,8 +30,9 @@ function getDnsTxtValueForDomain(string $domain) : string
  * @param  array $domains array of domain names
  * @return bool          return
  */
-function authorizeDomains($domains) : boolean
+function authorizeDomains($domains) : bool
 {
+    print PHP_EOL . "***------------ Authorizing Domain(s) ------------***" . PHP_EOL;
     if(is_array($domains)) {
         return array_walk($domains,'authorizeDomain');
     }
@@ -43,20 +47,19 @@ function authorizeDomains($domains) : boolean
  * @param  string $domain This should be a fully qualified domain name
  * @return bool         return
  */
-function authorizeDomain($domain) : boolean
+function authorizeDomain($domain) : bool
 {
     $txtValue = getDnsTxtValueForDomain($domain);
     $recordHostname = "_acme-challenge." . $domain;
 
-    print "TXT value: " . $txtValue . PHP_EOL;
-    print "Record Hostname: " . $recordHostname . PHP_EOL;
+    print "*** Record Hostname: " . $recordHostname . " ***" . PHP_EOL;
 
     /* @var $driver AcmeDnsDriverInterface */
     $driver = Settings::getDnsDriver();
     $driver->addTxtRecord($recordHostname, $txtValue);
 
 
-    print "Waiting for DNS propagation. This may take a while depending on your DNS provider..." . PHP_EOL;
+    print "*** Waiting for DNS propagation. This may take a while depending on your DNS provider..." . PHP_EOL;
     $hostCheckCommand = "/usr/bin/host -t TXT " . $recordHostname;
 
     while (true)
@@ -65,7 +68,7 @@ function authorizeDomain($domain) : boolean
 
         if (strpos($output, $txtValue) !== FALSE)
         {
-            print "Found record! " . $output . PHP_EOL;
+            print "*** Found record! " . $output . PHP_EOL;
             break;
         }
 
@@ -81,8 +84,9 @@ function authorizeDomain($domain) : boolean
  * @param  array $domains array of domain names
  * @return bool          return
  */
-function checkDomains($domains) : boolean
+function checkDomains($domains) : bool
 {
+    print PHP_EOL . "***------------ Checking Domain(s) ------------***" . PHP_EOL;
     if(is_array($domains)) {
         return array_walk($domains, 'checkDomain');
     }
@@ -96,19 +100,21 @@ function checkDomains($domains) : boolean
  * @param  string $domain a fully qualified domain name
  * @return book         return
  */
-function checkDomain($domain) : boolean
+function checkDomain($domain) : bool
 {
     // get acmephp to check
-    print "Requesting letsencrypt run the check..." . PHP_EOL;
+    print "*** Requesting letsencrypt run the check on " . $domain . "..." . PHP_EOL;
     $checkCommand = ACMEPHP_COMMAND . " check -s dns {$domain}";
 
-    while (true)
+    $i = 0;
+    while ($i < 5)
     {
+        $i++;
         $output = shell_exec($checkCommand);
 
         if (strpos($output, "The authorization check was successful!") !== FALSE)
         {
-            print "Found record! " . $output . PHP_EOL;
+            print "*** Found record for " . $domain . "! " . $output . PHP_EOL;
             break;
         }
 
@@ -124,8 +130,9 @@ function checkDomain($domain) : boolean
  * @param  [type] $request [description]
  * @return [type]          [description]
  */
-function requestCertificateFromAuthority($request) : boolean
+function requestCertificateFromAuthority($request) : bool
 {
+    print PHP_EOL . "***------------ Requesting Certificate ------------***" . PHP_EOL;
     $requestCommand = ACMEPHP_COMMAND . " request {$request}";
     $output = shell_exec($requestCommand);
 
@@ -133,6 +140,8 @@ function requestCertificateFromAuthority($request) : boolean
     // it is their first time or not. This actually still works.
 
     print $output . PHP_EOL;
+
+    return true;
 
 }
 
@@ -147,8 +156,10 @@ function requestCertificateFromAuthority($request) : boolean
  * @param  string $foldername the desired name for the new folder
  * @return bool             return
  */
-function copyCertificatesToDomainFolder($foldername) : boolean
+function copyCertificatesToDomainFolder($foldername) : bool
 {
+    print PHP_EOL . "***------------ Copying Certificates to {$foldername} ------------***" . PHP_EOL;
+
     mkdir($foldername);
     mkdir("{$foldername}/nginx");
     mkdir("{$foldername}/apache");
@@ -168,6 +179,8 @@ function copyCertificatesToDomainFolder($foldername) : boolean
     copy($nginxCombinedFile, "{$foldername}/nginx/{$foldername}.crt");
     copy($privateKey, "{$foldername}/nginx/{$foldername}.key");
 
+    print PHP_EOL . "***------------ Certificates Copied ------------***" . PHP_EOL;
+
     return true;
 }
 
@@ -177,9 +190,11 @@ function copyCertificatesToDomainFolder($foldername) : boolean
  * and display the dates.
  * @return boolean return
  */
-function checkCertificateStatus() : boolean
+function checkCertificateStatus() : bool
 {
-    $statusCommand = ACMEPHP_COMMAND . "status";
+    print PHP_EOL . "***------------ Certificate Status ------------***" . PHP_EOL;
+
+    $statusCommand = ACMEPHP_COMMAND . " status";
     $output = shell_exec($statusCommand);
 
     print $output . PHP_EOL;

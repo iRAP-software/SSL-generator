@@ -19,6 +19,10 @@ This does it through interfacing with your DNS provider in order to create the n
     * Right now there is only one supported driver ([Route53](https://aws.amazon.com/route53/)), so you just need to plug in the path to your ACME PHP installation, and plug in your AWS key and secret.
 * Rename the `Settings.php.tmpl` file to `Settings.php`
 * Execute the `main.php` file directly, including at least one domain name as the main parameter.  The tool cannot be run without at least one valid domain name.
+* If you would like to see all the possible ways to use the main.php script, enter:
+```
+$ php main.php --help
+```
 * Answer any/all questions truthfully.
 * You should see your newly generated certificate files in the directory you ran the command from.
 
@@ -31,7 +35,7 @@ alias ssl-generator="/usr/bin/php $HOME/SSL-generator/src/main.php"
 ```
 
 ### SymLink
-It can be useful, if using this tool within iRAP, and on the standard iRAP laptop setup; to alter the ~/.acmephp folder which is created within your ubuntu environment to be a symlink to the SSL/acmephp folder within Seafile (Products/Admin/SSL/acmephp.  This means that all certificates created will be copied into the Seafile repository by default and will be easily accessible.
+It can be useful, if using this tool within iRAP, and on the standard iRAP laptop setup; to alter the ~/.acmephp folder which is created within your ubuntu environment to be a symlink to the SSL/acmephp folder within Seafile (Products/Admin/SSL/acmephp).  This means that all certificates created will be copied into the Seafile repository by default and will be easily accessible.
 
 
 

@@ -3,11 +3,26 @@
  * collection of procedural usage functions for this app.
  */
 
+/**
+ * Function to retrieve a txt string from the acme-php scripts
+ * for use within the TXT record within the DNS zone file.
+ * @param  string $domain the domain in question
+ * @return bool         return
+ */
 function getDnsTxtValueForDomain(string $domain) : string
 {
     $cmd = ACMEPHP_COMMAND . " authorize --solver dns {$domain}";
+
+    // output the command for reference if testing mode is live
+    if(TESTING) {
+        print $cmd . PHP_EOL;
+        return 'TXT_VALUE';
+    }
+
+    // execute the command
     $output = shell_exec($cmd);
 
+    // parse the return from the command to find the txt value
     $lines = explode(PHP_EOL, $output);
 
     foreach ($lines as $line)
@@ -54,14 +69,23 @@ function authorizeDomain($domain) : bool
 
     print "*** Record Hostname: " . $recordHostname . " ***" . PHP_EOL;
 
+    $hostCheckCommand = "/usr/bin/host -t TXT " . $recordHostname;
+
+    // output the command for reference if testing mode is live
+    if(TESTING) {
+        print $hostCheckCommand . PHP_EOL;
+        return true;
+    }
+
+    // apply the txt string to the DNS Zone file as a TXT record
     /* @var $driver AcmeDnsDriverInterface */
     $driver = Settings::getDnsDriver();
     $driver->addTxtRecord($recordHostname, $txtValue);
 
 
     print "*** Waiting for DNS propagation. This may take a while depending on your DNS provider..." . PHP_EOL;
-    $hostCheckCommand = "/usr/bin/host -t TXT " . $recordHostname;
 
+    // Use Acme-PHP to check for the TXT record in the DNS Zone file
     while (true)
     {
         $output = shell_exec($hostCheckCommand);
@@ -96,7 +120,8 @@ function checkDomains($domains) : bool
 }
 
 /**
- * Function to use AcmePHP to check the TXT record applied to the supplied domain name
+ * Function to use AcmePHP to send a request to the Certificate Authority to
+ * check the TXT record applied to the supplied domain name
  * @param  string $domain a fully qualified domain name
  * @return book         return
  */
@@ -105,6 +130,13 @@ function checkDomain($domain) : bool
     // get acmephp to check
     print "*** Requesting letsencrypt run the check on " . $domain . "..." . PHP_EOL;
     $checkCommand = ACMEPHP_COMMAND . " check -s dns {$domain}";
+
+    // output the command for reference if testing mode is live
+    if(TESTING) {
+        print $checkCommand . PHP_EOL;
+        return true;
+    }
+
 
     $i = 0;
     while ($i < 5)
@@ -134,6 +166,13 @@ function requestCertificateFromAuthority($request) : bool
 {
     print PHP_EOL . "***------------ Requesting Certificate ------------***" . PHP_EOL;
     $requestCommand = ACMEPHP_COMMAND . " request {$request}";
+
+    // output the command for reference if testing mode is live
+    if(TESTING) {
+        print $requestCommand . PHP_EOL;
+        return true;
+    }
+
     $output = shell_exec($requestCommand);
 
     // the user may or may not have been asked a series of questions for that cert, depending on whether
@@ -195,6 +234,14 @@ function checkCertificateStatus() : bool
     print PHP_EOL . "***------------ Certificate Status ------------***" . PHP_EOL;
 
     $statusCommand = ACMEPHP_COMMAND . " status";
+
+    // output the command for reference if testing mode is live
+    if(TESTING) {
+        print $statusCommand . PHP_EOL;
+        return true;
+    }
+
+
     $output = shell_exec($statusCommand);
 
     print $output . PHP_EOL;

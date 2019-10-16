@@ -79,7 +79,7 @@ $commando->option('a')
 
 $primary = $commando[0];
 $alternates = explode(' ',$commando['a']);
-$location = $commando['l'];
+$location = ($commando['l']) ? $commando['l'] . '/' : null;
 define('TESTING', ($commando['t']) ? true : false );
 
 
@@ -109,7 +109,7 @@ if(TESTING) {
     print "Alternates:                  " . print_r($alternates,true) . PHP_EOL;
     print "Domains:                     " . print_r($domains,true) . PHP_EOL;
     print "Acme-PHP Request String:     " . $requestString . PHP_EOL;
-    print "Location:                    " . $location . PHP_EOL;
+    print "Location:                    " . (($location) ? $location : 'NOT-SPECIFIED') . PHP_EOL;
     print  PHP_EOL . "Commands that will be used:" . PHP_EOL;
 }
 
@@ -130,7 +130,7 @@ requestCertificateFromAuthority($requestString);
 
 // Copy the certificates to wherever this script is being called from:
 // Use the primary domain name
-copyCertificatesToDomainFolder($location . '/' . $primary);
+copyCertificatesToDomainFolder($location . $primary);
 
 // Check the certificate and output the status report
 checkCertificateStatus();

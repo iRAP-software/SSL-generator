@@ -51,7 +51,12 @@ $commando->option('l')
     ->describedAs("A folder name or url to store the generated certificates into.
         The folder must exist and be accessible by PHP.")
     ->must( function($value) {
-        return is_dir($value);
+        if(is_dir($value) && is_writable($value)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     });
 
 // alternate or multiple domains option

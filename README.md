@@ -10,6 +10,7 @@ This does it through interfacing with your DNS provider in order to create the n
 
 * [Install composer](https://blog.programster.org/ubuntu-install-composer) if you haven't got it already.
 * [Install ACME PHP](https://blog.programster.org/acme-php-installation) to your machine.
+* (You may need to install the php-mbstring mod if it is not already installed on your machine.  This mod is required by one of the composer installed plugins)
 * Use the tool to [register](https://blog.programster.org/acme-php-registration) (you only have to do this once).
 * Clone this repository: `git clone https://github.com/iRAP-software/SSL-generator.git`
 * Go into the `/src` folder.
@@ -17,7 +18,11 @@ This does it through interfacing with your DNS provider in order to create the n
 * Fill in the `Settings.php.tmpl` file.
     * Right now there is only one supported driver ([Route53](https://aws.amazon.com/route53/)), so you just need to plug in the path to your ACME PHP installation, and plug in your AWS key and secret.
 * Rename the `Settings.php.tmpl` file to `Settings.php`
-* Execute the `main.php` file directly
+* Execute the `main.php` file directly, including at least one domain name as the main parameter.  The tool cannot be run without at least one valid domain name.
+* If you would like to see all the possible ways to use the main.php script, enter:
+```
+$ php main.php --help
+```
 * Answer any/all questions truthfully.
 * You should see your newly generated certificate files in the directory you ran the command from.
 
@@ -28,6 +33,10 @@ For example:
 ```
 alias ssl-generator="/usr/bin/php $HOME/SSL-generator/src/main.php"
 ```
+
+### SymLink
+It can be useful, if using this tool within an office with shared information systems, to alter the ~/.acmephp folder which is created within your ubuntu environment to be a symlink to your central file-store location.  This means that all certificates created will be copied into the file-store repository automatically and will be easily accessible.
+
 
 
 ## Contributing

@@ -30,7 +30,7 @@ $commando->option()
     ->aka('primary')
     ->require()
     ->describedAs("A fully qualified and valid, in existence domain name (or sub-domain thereof)")
-    ->must(function($value){
+    ->must( function($value) {
         if(gethostbyname($value) == $value) {
             return false;
         }
@@ -44,6 +44,16 @@ $commando->flag('t')
     ->describedAs("Testing flag, use to preview commands being sent to Acme-PHP")
     ->boolean();
 
+// option to provide a different location to save the certificates into.
+$commando->option('l')
+    ->aka('location')
+    ->aka('folder')
+    ->describedAs("A folder name or url to store the generated certificates into.
+        The folder must exist and be accessible by PHP.")
+    ->must( function($value) {
+        return is_dir($value);
+    });
+
 // alternate or multiple domains option
 // each element (if multiple) MUST return an IP address: gethostbyname will return the IP, or the passed value on failure.
 // A certificate cannot be applied for if the domain does not exist and does not respond correctly
@@ -53,7 +63,7 @@ $commando->option('a')
     ->aka('alternate')
     ->aka('multiple')
     ->describedAs("Alternate, or multiple domains to be added to a single SSL Certificate request\nTo apply multiple alternates, separate the domains with a single space\neg:\"alternate1.com alternate2.com\"")
-    ->must(function($value){
+    ->must( function($value) {
         $arr = explode(' ',$value);
         $ret = true;
         array_walk($arr,function($v) use (&$ret) {
@@ -69,6 +79,7 @@ $commando->option('a')
 
 $primary = $commando[0];
 $alternates = explode(' ',$commando['a']);
+$location = $commando['l'];
 define('TESTING', ($commando['t']) ? true : false );
 
 
@@ -91,14 +102,15 @@ if(isset($alternates) && !empty($alternates)) {
 
 
 if(TESTING) {
-    print "***------------ TEST MODE ------------***".PHP_EOL;
+    print "***------------ TEST MODE ------------***" . PHP_EOL;
     print "Testing:                     " . ((TESTING) ? 'yes' : 'no') . PHP_EOL;
     print "Arguments:                   " . print_r($commando->getArgumentValues(),true) . PHP_EOL;
     print "Primary:                     " . $primary . PHP_EOL;
     print "Alternates:                  " . print_r($alternates,true) . PHP_EOL;
     print "Domains:                     " . print_r($domains,true) . PHP_EOL;
-    print "Acme-PHP Request String:     " . $requestString . PHP_EOL . PHP_EOL;
-    print "Commands that will be used:" . PHP_EOL;
+    print "Acme-PHP Request String:     " . $requestString . PHP_EOL;
+    print "Location:                    " . $location . PHP_EOL;
+    print  PHP_EOL . "Commands that will be used:" . PHP_EOL;
 }
 
 // output the details of the request
@@ -118,7 +130,7 @@ requestCertificateFromAuthority($requestString);
 
 // Copy the certificates to wherever this script is being called from:
 // Use the primary domain name
-copyCertificatesToDomainFolder($primary);
+copyCertificatesToDomainFolder($location . '/' . $primary);
 
 // Check the certificate and output the status report
 checkCertificateStatus();

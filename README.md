@@ -35,7 +35,7 @@ alias ssl-generator="/usr/bin/php $HOME/SSL-generator/src/main.php"
 ```
 
 ### SymLink
-It can be useful, if using this tool within iRAP, and on the standard iRAP laptop setup; to alter the ~/.acmephp folder which is created within your ubuntu environment to be a symlink to the SSL/acmephp folder within Seafile (Products/Admin/SSL/acmephp).  This means that all certificates created will be copied into the Seafile repository by default and will be easily accessible.
+It can be useful, if using this tool within an office with shared information systems, to alter the ~/.acmephp folder which is created within your ubuntu environment to be a symlink to your central file-store location.  This means that all certificates created will be copied into the file-store repository automatically and will be easily accessible.
 
 
 

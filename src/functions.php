@@ -16,7 +16,7 @@ function getDnsTxtValueForDomain(string $domain) : string
     // output the command for reference if testing mode is live
     if(TESTING) {
         print $cmd . PHP_EOL;
-        return 'TXT_VALUE';
+        return "TXT-VALUE";
     }
 
     // execute the command
@@ -199,12 +199,20 @@ function copyCertificatesToDomainFolder($foldername) : bool
 {
     print PHP_EOL . "***------------ Copying Certificates to {$foldername} ------------***" . PHP_EOL;
 
-    mkdir($foldername);
+    $acmeFolder = getenv('HOME') . '/.acmephp/master/';
+
+    if(TESTING) {
+        print "Foldername files would be copied to: " . $foldername . PHP_EOL;
+        print "And copies placed in: " . $acmeFolder . PHP_EOL;
+        return true;
+    }
+
+    mkdir( $foldername );
     mkdir("{$foldername}/nginx");
     mkdir("{$foldername}/apache");
 
-    $certsPath = getenv('HOME') . '/.acmephp/master/certs/' . $foldername;
-    $privateKeyPath = getenv('HOME') . '/.acmephp/master/private/' . $foldername;
+    $certsPath = $acmeFolder . 'certs/' . $foldername;
+    $privateKeyPath = $acmeFolder . 'private/' . $foldername;
 
     $chainfile = $certsPath . '/chain.pem';
     $nginxCombinedFile = $certsPath . '/fullchain.pem';

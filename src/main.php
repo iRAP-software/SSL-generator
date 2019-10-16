@@ -91,7 +91,7 @@ if(isset($alternates) && !empty($alternates)) {
 
 
 if(TESTING) {
-    print "--------------- testing ---------------".PHP_EOL;
+    print "***------------ TEST MODE ------------***".PHP_EOL;
     print "Testing:                     " . ((TESTING) ? 'yes' : 'no') . PHP_EOL;
     print "Arguments:                   " . print_r($commando->getArgumentValues(),true) . PHP_EOL;
     print "Primary:                     " . $primary . PHP_EOL;

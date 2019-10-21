@@ -79,6 +79,11 @@ $commando->option('a')
         return $ret;
     });
 
+$commando->flag('s')
+    ->aka('status')
+    ->describedAs("Output the status of all registered certificates for review.")
+    ->boolean();
+
 
 // set our initial variable values
 
@@ -87,6 +92,10 @@ $alternates = explode(' ',$commando['a']);
 $location = ($commando['l']) ? $commando['l'] . '/' : null;
 define('TESTING', ($commando['t']) ? true : false );
 
+if($commando['s']) {
+    checkCertificateStatus();
+    die();
+}
 
 // Manipulate the provided parameters for use within script
 

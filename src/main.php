@@ -79,23 +79,29 @@ $commando->option('a')
         return $ret;
     });
 
+// status flag: will only run the status method and is used for previewing the current state of registered certificates.
 $commando->flag('s')
     ->aka('status')
     ->describedAs("Output the status of all registered certificates for review.")
     ->boolean();
 
 
-// set our initial variable values
 
+// Run the status check if requested and then end.
+if($commando['s']) {
+    checkCertificateStatus();
+    die();
+}
+
+// set our initial variable values
 $primary = $commando[0];
 $alternates = explode(' ',$commando['a']);
 $location = ($commando['l']) ? $commando['l'] . '/' : null;
 define('TESTING', ($commando['t']) ? true : false );
 
-if($commando['s']) {
-    checkCertificateStatus();
-    die();
-}
+
+
+
 
 // Manipulate the provided parameters for use within script
 

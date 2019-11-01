@@ -89,6 +89,7 @@ $commando->flag('s')
 
 // Run the status check if requested and then end.
 if($commando['s']) {
+    define('TESTING', false );
     checkCertificateStatus();
     die();
 }

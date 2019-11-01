@@ -113,6 +113,7 @@ else {
 }
 
 $domains = array_filter($domains);
+$alternates = array_filter($alternates);
 
 // Create the commandline string that will be appended to the acme-php request command later on.
 $requestString = $primary;

@@ -102,8 +102,6 @@ define('TESTING', ($commando['t']) ? true : false );
 
 
 
-
-
 // Manipulate the provided parameters for use within script
 
 // Merge the primary and alternates into 1 array for authorizing and processing
@@ -113,6 +111,8 @@ if(isset($alternates) && !empty($alternates)){
 else {
     $domains = (array)$primary;
 }
+
+$domains = array_filter($domains);
 
 // Create the commandline string that will be appended to the acme-php request command later on.
 $requestString = $primary;
